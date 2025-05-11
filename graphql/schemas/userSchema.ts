@@ -3,6 +3,7 @@ const userSchema = `
         id: ID!
         username: String!
         email: String!
+        role: String!
     }
 
     type AuthPayload {
