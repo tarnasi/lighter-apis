@@ -29,7 +29,7 @@ async function startServer() {
       context: async ({ req }: { req: AuthRequest }) => {
         const user = getUserFromToken(req);
         const operationName = req.body?.operationName;
-        const publicOperation = ["Login", "Register"];
+        const publicOperation = ["Login", "Register", "UserList"];
         if (!user && !publicOperation.includes(operationName)) {
           if (!user) {
             throw new GeneralAppException(

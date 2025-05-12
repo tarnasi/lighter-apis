@@ -1,32 +1,46 @@
-import bycrypt from 'bcryptjs';
-import User from '../../models/User';
-import { generateToken } from '../../utils/jwt';
+import bcrypt from "bcryptjs";
+import User from "../../models/User";
+import { generateToken } from "../../utils/jwt";
 
 const userResolver = {
   Query: {
     me: async (_: any, __: any, { user }: any) => {
-      if (!user) throw new Error('Not authenticated');
+      if (!user) throw new Error("مجاز نمیباشد");
       return await User.findById(user.userId);
+    },
+
+    userList: async (_: any, __: any, { user }: any) => {
+      // if (!user) throw new Error("مجاز نمیباشد");
+
+      // const currentUser = await User.findById(user.userId);
+      // if (currentUser?.role !== "admin") throw new Error("دسترسی غیرمجاز است");
+
+      return await User.find({});
     },
   },
 
   Mutation: {
-    register: async (_: any, { username, email, password }: any) => {
-      const existingUser = await User.findOne({ email });
-      if (existingUser) throw new Error('Email already in use');
+    register: async (_: any, { mobile, email, password, birthday }: any) => {
+      const existingUser = await User.findOne({ mobile });
+      if (existingUser) throw new Error("شماره موبایل قبلا ثبت شده است");
 
-      const hashedPassword = await bycrypt.hash(password, 10);
-      const newUser = await User.create({ username, email, password: hashedPassword });
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = await User.create({
+        mobile,
+        email,
+        birthday,
+        password: hashedPassword,
+      });
 
       return { token: generateToken(newUser.id), user: newUser };
     },
 
-    login: async (_: any, { email, password }: any) => {
-      const user = await User.findOne({ email });
-      if (!user) throw new Error('Invalid email');
+    login: async (_: any, { mobile, password }: any) => {
+      const user = await User.findOne({ mobile });
+      if (!user) throw new Error("شماره موبایل خود را اصلاح کنید");
 
-      const isValid = await bycrypt.compare(password, user.password);
-      if (!isValid) throw new Error('Invalid password');
+      const isValid = await bcrypt.compare(password, user.password);
+      if (!isValid) throw new Error("پسورد غیرمجاز");
 
       return { token: generateToken(user.id), user };
     },

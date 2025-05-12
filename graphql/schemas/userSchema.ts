@@ -1,9 +1,10 @@
 const userSchema = `
     type User {
         id: ID!
-        username: String!
-        email: String!
+        mobile: String!
+        email: String
         role: String!
+        birthday: String
     }
 
     type AuthPayload {
@@ -13,11 +14,12 @@ const userSchema = `
 
     type Query {
         me: User
+        userList: [User!]!
     }
 
     type Mutation {
-        register(username: String!, email: String!, password: String!): AuthPayload
-        login(email: String!, password: String!): AuthPayload
+        register(mobile: String!, email: String, password: String!, birthday: String): AuthPayload
+        login(mobile: String!, password: String!): AuthPayload
     }
 `;
 
