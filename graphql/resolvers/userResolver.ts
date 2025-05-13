@@ -20,16 +20,18 @@ const userResolver = {
   },
 
   Mutation: {
-    register: async (_: any, { mobile, email, password, birthday }: any) => {
+    register: async (_: any, { full_name, mobile, email, password, birthday, wholesaler }: any) => {
       const existingUser = await User.findOne({ mobile });
       if (existingUser) throw new Error("شماره موبایل قبلا ثبت شده است");
 
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await User.create({
+        full_name,
         mobile,
         email,
         birthday,
         password: hashedPassword,
+        wholesaler
       });
 
       return { token: generateToken(newUser.id), user: newUser };

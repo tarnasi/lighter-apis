@@ -1,9 +1,11 @@
 const userSchema = `
     type User {
         id: ID!
+        full_name: String!
         mobile: String!
         email: String
         role: String!
+        wholesaler: Boolean!
         birthday: String
     }
 
@@ -18,7 +20,7 @@ const userSchema = `
     }
 
     type Mutation {
-        register(mobile: String!, email: String, password: String!, birthday: String): AuthPayload
+        register(full_name: String!, mobile: String!, email: String, password: String!, birthday: String, wholesaler: Boolean): AuthPayload
         login(mobile: String!, password: String!): AuthPayload
     }
 `;
