@@ -10,10 +10,10 @@ const userResolver = {
     },
 
     userList: async (_: any, __: any, { user }: any) => {
-      // if (!user) throw new Error("مجاز نمیباشد");
+      if (!user) throw new Error("مجاز نمیباشد");
 
-      // const currentUser = await User.findById(user.userId);
-      // if (currentUser?.role !== "admin") throw new Error("دسترسی غیرمجاز است");
+      const currentUser = await User.findById(user.userId);
+      if (currentUser?.role !== "admin") throw new Error("دسترسی غیرمجاز است");
 
       return await User.find({});
     },
