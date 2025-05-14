@@ -10,14 +10,15 @@ export interface AuthRequest extends Request {
   user?: any;
 }
 
-// Function to extract user from the token
 export const getUserFromToken = (req: AuthRequest) => {
   const token = req.headers.authorization?.split(' ')[1]; // Expecting "Bearer <token>"
 
-  if (!token) return false;
+  if (!token) return null;
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-    return { userId: decoded.userId };
-  } catch (error) {return null}
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; role: string };
+    return decoded;
+  } catch (error) {
+    return null;
+  }
 };
