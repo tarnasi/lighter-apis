@@ -1,23 +1,17 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-interface IUser extends Document {
-  full_name: string;
-  mobile: string;
-  email?: string;
-  password: string;
-  role: string;
-  birthday?: Date;
-  wholesaler?: boolean
+export interface ICategory extends Document {
+  name: string;
+  slug: string;
+  image?: string;
+  description?: string;
 }
 
-const UserSchema = new mongoose.Schema<IUser>({
-  full_name: { type: String, required: true, unique: true },
-  mobile: { type: String, required: true, unique: true },
-  email: { type: String, required: false, unique: true, sparse: true },
-  password: { type: String, required: true },
-  birthday: { type: Date, required: false },
-  role: { type: String, default: "admin" },
-  wholesaler: { type: Boolean, default: false },
+const CategorySchema = new mongoose.Schema<ICategory>({
+  name: { type: String, required: true },
+  slug: { type: String, required: true },
+  image: { type: String, default: "/no-image.png" },
+  description: String,
 });
 
-export default mongoose.model<IUser>("User", UserSchema, "users");
+export default mongoose.model<ICategory>("Category", CategorySchema, "categories");

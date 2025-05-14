@@ -1,4 +1,6 @@
-const userSchema = `
+import gql from 'graphql-tag'
+
+const userSchema = gql`
   type User {
     id: ID!
     full_name: String!
