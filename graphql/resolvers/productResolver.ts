@@ -29,7 +29,8 @@ const productResolver = {
         category: input.categoryId,
         brand: input.brandId,
       });
-      return await product.save();
+      await product.save()
+      return product.populate("category").populate("brand");
     },
     updateProduct: async (_: any, { input }: { input: any }) => {
       const updated = await Product.findByIdAndUpdate(
@@ -42,7 +43,7 @@ const productResolver = {
         },
         { new: true }
       );
-      return updated;
+      return updated.populate("category").populate("brand");
     },
     deleteProduct: async (_: any, { id }: { id: string }) => {
       const result = await Product.findByIdAndDelete(id);
