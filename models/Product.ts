@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IProduct extends Document {
   title: string;
@@ -26,8 +26,9 @@ const ProductSchema = new Schema<IProduct>({
   is_pack: { type: Boolean, required: true },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
-  category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
-  brand: { type: Schema.Types.ObjectId, ref: 'Brand', required: true },
+  category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
+  brand: { type: Schema.Types.ObjectId, ref: "Brand", required: true },
 });
 
-export default mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);
+export default mongoose.models.Product ||
+  mongoose.model<IProduct>("Product", ProductSchema);

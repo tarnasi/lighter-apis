@@ -25,12 +25,10 @@ const productResolver = {
   Mutation: {
     createProduct: async (_: any, { input }: { input: any }) => {
       const product = new Product({
-        ...input,
-        category: input.categoryId,
-        brand: input.brandId,
+        input
       });
-      await product.save()
-      return product.populate("category").populate("brand");
+      await product.save();
+      return await product.populate("category").populate("brand");
     },
     updateProduct: async (_: any, { input }: { input: any }) => {
       const updated = await Product.findByIdAndUpdate(
