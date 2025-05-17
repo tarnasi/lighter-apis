@@ -1,12 +1,23 @@
-import gql from 'graphql-tag';
+// schema.ts
+import gql from "graphql-tag";
 
 const categorySchema = gql`
+  type Brand {
+    id: ID!
+    name: String!
+    slug: String!
+    image: String
+    description: String
+    category: Category!
+  }
+
   type Category {
     id: ID!
     name: String!
     slug: String!
     image: String
     description: String
+    brands: [Brand!]! # 👈 Add this field
   }
 
   input CreateCategoryInput {

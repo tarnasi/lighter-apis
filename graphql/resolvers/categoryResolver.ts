@@ -1,4 +1,5 @@
 import Category, { ICategory } from "../../models/Category";
+import Brand from "../../models/Brand"; // 👈 Import Brand model
 
 const categoryResolver = {
   Query: {
@@ -17,6 +18,12 @@ const categoryResolver = {
     },
     category: async (_: any, { id }: { id: string }) => {
       return await Category.findById(id);
+    },
+  },
+
+  Category: {
+    brands: async (parent: ICategory) => {
+      return await Brand.find({ category: parent.id });
     },
   },
 
