@@ -25,23 +25,26 @@ const productResolver = {
   Mutation: {
     createProduct: async (_: any, { input }: { input: any }) => {
       const product = new Product({
-        input
+        ...input,
+        category: input.categoryId,
+        brand: input.brandId,
       });
       await product.save();
-      return await product.populate("category").populate("brand");
+      return await Product.findById(product._id)
+        .populate("category")
+        .populate("brand");
     },
     updateProduct: async (_: any, { input }: { input: any }) => {
-      const updated = await Product.findByIdAndUpdate(
-        input.id,
-        {
-          ...input,
-          category: input.categoryId,
-          brand: input.brandId,
-          updated_at: new Date(),
-        },
-        { new: true }
-      );
-      return updated.populate("category").populate("brand");
+      await Product.findByIdAndUpdate(input.id, {
+        ...input,
+        category: input.categoryId,
+        brand: input.brandId,
+        updated_at: new Date(),
+      });
+
+      return await Product.findById(input.id)
+        .populate("category")
+        .populate("brand");
     },
     deleteProduct: async (_: any, { id }: { id: string }) => {
       const result = await Product.findByIdAndDelete(id);
