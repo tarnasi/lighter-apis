@@ -5,8 +5,9 @@ import cors from "cors";
 import connectDB from "./config/db";
 import { typeDefs, resolvers } from "./graphql";
 import { getUserFromToken, AuthRequest } from "./middleware/auth";
-import { GraphQLError } from "graphql";
 import { GeneralAppException } from "./utils/exceptions";
+
+import uploadRouter from './routes/upload'
 
 const app: Express = express();
 const port = process.env.PORT || 4000;
@@ -43,6 +44,11 @@ async function startServer() {
       },
     })
   );
+
+
+
+  app.use("/upload", uploadRouter);
+  app.use('/uploads', express.static('uploads'));
 
   // Start Express server
   app.listen(port, () => {
