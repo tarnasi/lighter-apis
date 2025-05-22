@@ -8,6 +8,7 @@ import { getUserFromToken, AuthRequest } from "./middleware/auth";
 import { GeneralAppException } from "./utils/exceptions";
 
 import uploadRouter from './routes/upload'
+import path from "path";
 
 const app: Express = express();
 const port = process.env.PORT || 4000;
@@ -48,7 +49,7 @@ async function startServer() {
 
 
   app.use("/upload", uploadRouter);
-  app.use('/assets', express.static('uploads'));
+  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
   // Start Express server
   app.listen(port, () => {
