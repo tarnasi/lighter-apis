@@ -48,7 +48,7 @@ async function startServer() {
 
 
   app.use("/upload", uploadRouter);
-  app.use('/uploads', express.static('uploads'));
+  app.use('/assets', express.static('uploads'));
 
   // Start Express server
   app.listen(port, () => {

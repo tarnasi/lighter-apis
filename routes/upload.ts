@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, RequestHandler, Response } from "express";
 import multer from "multer";
 
 const uploadRouter = express.Router();
@@ -13,11 +13,18 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-uploadRouter.post("/", upload.single("image"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+uploadRouter.post(
+  "/",
+  upload.single("image-data") as RequestHandler,
+  (req: Request, res: Response): void => {
+    if (!req.file) {
+      res.status(400).json({ error: "No file uploaded" });
+      return;
+    }
 
-  const filePath = `/uploads/${req.file.filename}`;
-  res.json({ url: filePath });
-});
+    const filePath = `/uploads/${req.file.filename}`;
+    res.json({ url: filePath });
+  }
+);
 
 export default uploadRouter;

@@ -38,3 +38,8 @@ export interface ResetPasswordInput {
   new_password: string;
   confirm_password: string;
 }
+
+export type ExpressContextFunctionArgument = {
+  req: Request;
+  res: Response;
+};
