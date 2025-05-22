@@ -1,13 +1,26 @@
 import express, { Request, RequestHandler, Response } from "express";
 import multer from "multer";
+import fs from "fs";
+import path from "path";
 
 const uploadRouter = express.Router();
 
-// Configure multer for local uploads (you can later swap with S3/Cloudinary)
 const storage = multer.diskStorage({
-  destination: "uploads",
+  destination: (req, file, cb) => {
+    const folderName = ("default").trim();
+    const uploadPath = path.join("uploads", folderName);
+
+    fs.mkdir(uploadPath, { recursive: true }, (err) => {
+      if (err) {
+        cb(err, uploadPath);
+      } else {
+        cb(null, uploadPath);
+      }
+    });
+  },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    const extension = file.originalname.split('.')[1]
+    cb(null, `${Date.now()}.${extension}`);
   },
 });
 
@@ -22,7 +35,8 @@ uploadRouter.post(
       return;
     }
 
-    const filePath = `/uploads/${req.file.filename}`;
+    const folderName = req.body?.folderName || "default";
+    const filePath = `/uploads/${folderName}/${req.file.filename}`;
     res.json({ url: filePath });
   }
 );
