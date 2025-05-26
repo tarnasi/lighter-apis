@@ -9,6 +9,7 @@ import { GeneralAppException } from "./utils/exceptions";
 
 import uploadRouter from './routes/upload'
 import path from "path";
+import { public_operations } from "./middleware/publicOperations";
 
 const app: Express = express();
 const port = process.env.PORT || 4000;
@@ -31,7 +32,7 @@ async function startServer() {
       context: async ({ req }: { req: AuthRequest }) => {
         const user = getUserFromToken(req);
         const operationName = req.body?.operationName;
-        const publicOperation = ["Login", "Register", "UserList"];
+        const publicOperation = public_operations;
         if (!user && !publicOperation.includes(operationName)) {
           if (!user) {
             throw new GeneralAppException(
