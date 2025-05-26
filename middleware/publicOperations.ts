@@ -5,4 +5,10 @@ export const public_operations = [
   "ProductList",
   "ProductSearch",
   "Product",
+  "CategoryList",
+  "CategorySearch",
+  "Category",
+  "brandLis",
+  "brandSearch",
+  "brand",
 ];
