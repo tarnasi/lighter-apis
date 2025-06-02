@@ -2,11 +2,19 @@ import Product from "../../models/Product";
 
 const productResolver = {
   Query: {
-    productList: async (_: any, args: { categoryId?: string }) => {
+    productList: async (
+      _: any,
+      args: { categoryId?: string; brandId?: string }
+    ) => {
       const filter: any = {};
 
       if (args.categoryId) {
         filter.category = args.categoryId;
+      }
+
+      console.log("brandId:", args.brandId);
+      if (args.brandId) {
+        filter.brand = args.brandId;
       }
 
       return await Product.find(filter).populate("category").populate("brand");
