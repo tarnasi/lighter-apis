@@ -45,7 +45,7 @@ const productSchema = gql`
   }
 
   type Query {
-    productList: [Product!]!
+    productList(categoryId: ID): [Product!]!
     productSearch(keyword: String!): [Product!]!
     product(id: ID!): Product
   }

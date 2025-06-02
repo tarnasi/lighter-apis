@@ -2,8 +2,14 @@ import Product from "../../models/Product";
 
 const productResolver = {
   Query: {
-    productList: async () => {
-      return await Product.find().populate("category").populate("brand");
+    productList: async (_: any, args: { categoryId?: string }) => {
+      const filter: any = {};
+
+      if (args.categoryId) {
+        filter.category = args.categoryId;
+      }
+
+      return await Product.find(filter).populate("category").populate("brand");
     },
     productSearch: async (_: any, { keyword }: { keyword: string }) => {
       const regex = new RegExp(keyword, "i");
