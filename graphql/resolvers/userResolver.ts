@@ -43,6 +43,7 @@ const userResolver = {
         birthday,
         password: hashedPassword,
         wholesaler,
+        role: "user"
       });
 
       return { token: generateToken(newUser.id), user: newUser };

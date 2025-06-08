@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema<IUser>({
   email: { type: String, required: false, unique: true, sparse: true },
   password: { type: String, required: true },
   birthday: { type: Date, required: false },
-  role: { type: String, default: "admin" },
+  role: { type: String, default: "user" },
   wholesaler: { type: Boolean, default: false },
 });
 
