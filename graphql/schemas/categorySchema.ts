@@ -2,6 +2,42 @@
 import gql from "graphql-tag";
 
 const categorySchema = gql`
+  enum SortOrder {
+    ASC
+    DESC
+  }
+
+  input CategorySortInput {
+    field: String!
+    order: SortOrder!
+  }
+
+  input CategoryPaginationInput {
+    page: Int!
+    pageSize: Int!
+  }
+
+  type PaginatedCategories {
+    items: [Category!]
+    total: Int!
+    page: Int!
+    pageSize: Int!
+  }
+
+  type Product {
+    id: ID!
+    title: String!
+    slug: String!
+    images: [String!]!
+    description: String
+    price: Float!
+    discount: Float
+    quantity: Int!
+    is_pack: Boolean!
+    created_at: String!
+    updated_at: String!
+  }
+
   type Brand {
     id: ID!
     name: String!
@@ -9,6 +45,7 @@ const categorySchema = gql`
     image: String
     description: String
     category: Category!
+    products: [Product!]!
   }
 
   type Category {
@@ -17,7 +54,7 @@ const categorySchema = gql`
     slug: String!
     image: String
     description: String
-    brands: [Brand!]! # 👈 Add this field
+    brands: [Brand!]!
   }
 
   input CreateCategoryInput {
@@ -36,7 +73,11 @@ const categorySchema = gql`
   }
 
   type Query {
-    categoryList: [Category!]!
+    categoryList(
+      search: String
+      sort: CategorySortInput
+      pagination: CategoryPaginationInput
+    ): PaginatedCategories!
     categorySearch(keyword: String!): [Category!]!
     category(id: ID!): Category
   }

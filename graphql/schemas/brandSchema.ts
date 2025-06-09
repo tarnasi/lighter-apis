@@ -1,6 +1,42 @@
 import gql from "graphql-tag";
 
 const brandSchema = gql`
+  enum SortType {
+    ASC
+    DESC
+  }
+
+  input sortBrandInput {
+    field: String!
+    order: SortType!
+  }
+
+  input BrandPaginationInput {
+    page: Int!
+    pageSize: Int!
+  }
+
+  type PaginatedBrands {
+    items: [Brand!]!
+    total: Int!
+    page: Int!
+    pageSize: Int!
+  }
+
+  type Product {
+    id: ID!
+    title: String!
+    slug: String!
+    images: [String!]!
+    description: String
+    price: Float!
+    discount: Float
+    quantity: Int!
+    is_pack: Boolean!
+    created_at: String!
+    updated_at: String!
+  }
+
   type Brand {
     id: ID!
     name: String!
@@ -8,6 +44,7 @@ const brandSchema = gql`
     image: String
     description: String
     category: Category!
+    products: [Product!]!
   }
 
   input CreateBrandInput {
@@ -28,7 +65,11 @@ const brandSchema = gql`
   }
 
   type Query {
-    brandList: [Brand!]!
+    brandList(
+      search: String
+      sort: sortBrandInput
+      pagination: BrandPaginationInput
+    ): PaginatedBrands!
     brandSearch(keyword: String!): [Brand!]!
     brand(id: ID!): Brand
   }

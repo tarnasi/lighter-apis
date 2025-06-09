@@ -1,9 +1,56 @@
 import Brand, { IBrand } from "../../models/Brand";
+import Product from "../../models/Product";
+
+
+const searchableFields = ["name", "slug", "description"];
 
 const brandResolver = {
   Query: {
-    brandList: async () => {
-      return await Brand.find().populate("category");
+    brandList: async (
+      _: any,
+      args: {
+        search?: string;
+        sort?: { field: string; order: "ASC" | "DESC" };
+        pagination?: { page: number; pageSize: number };
+      }
+    ) => {
+      const { search, sort, pagination } = args;
+
+      // Build search filter
+      let filter: any = {};
+      if (search) {
+        const regx = new RegExp(search, "i");
+        filter["$or"] = searchableFields.map((field) => ({
+          [field]: { $regex: regx },
+        }));
+      }
+
+      // Sorting
+      let sortOption: any = {};
+      if (sort) {
+        sortOption[sort.field] = sort.order === "ASC" ? 1 : -1;
+      }
+
+      // Pagination
+      const page = pagination?.page ?? 1;
+      const pageSize = pagination?.pageSize ?? 10;
+      const skip = (page - 1) * pageSize;
+
+      // Query total count for pagination
+      const total = await Brand.countDocuments(filter);
+
+      // Query with filters
+      const items = await Brand.find(filter)
+        .sort(sortOption)
+        .skip(skip)
+        .limit(pageSize);
+
+      return {
+        items,
+        total,
+        page,
+        pageSize,
+      };
     },
     brandSearch: async (_: any, { keyword }: { keyword: string }) => {
       const regex = new RegExp(keyword, "i");
@@ -20,6 +67,13 @@ const brandResolver = {
     },
   },
 
+  Brand: {
+    products: async (parent: IBrand) => {
+      // Always return array, never null!
+      return (await Product.find({ brand: parent.id })) || [];
+    },
+  },
+
   Mutation: {
     createBrand: async (_: any, { input }: { input: any }) => {
       const brand = new Brand({
@@ -27,7 +81,7 @@ const brandResolver = {
         category: input.categoryId,
       });
       await brand.save();
-      return brand.populate('category')
+      return brand.populate("category");
     },
     updateBrand: async (_: any, { input }: { input: any }) => {
       const updated = await Brand.findByIdAndUpdate(
@@ -38,7 +92,7 @@ const brandResolver = {
         },
         { new: true }
       );
-      return updated.populate('category');
+      return updated.populate("category");
     },
     deleteBrand: async (_: any, { id }: { id: string }) => {
       const result = await Brand.findByIdAndDelete(id);

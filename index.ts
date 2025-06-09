@@ -7,7 +7,7 @@ import { typeDefs, resolvers } from "./graphql";
 import { getUserFromToken, AuthRequest } from "./middleware/auth";
 import { GeneralAppException } from "./utils/exceptions";
 
-import uploadRouter from './routes/upload'
+import uploadRouter from "./routes/upload";
 import path from "path";
 import { public_operations } from "./middleware/publicOperations";
 
@@ -47,10 +47,8 @@ async function startServer() {
     })
   );
 
-
-
   app.use("/upload", uploadRouter);
-  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+  app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
   // Start Express server
   app.listen(port, () => {
