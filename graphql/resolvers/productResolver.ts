@@ -1,23 +1,64 @@
-import Product from "../../models/Product";
+import Brand, { IBrand } from "../../models/Brand";
+import Category, { ICategory } from "../../models/Category";
+import Product, { IProduct } from "../../models/Product";
+
+const searchableFields = ["title", "slug", "description"];
 
 const productResolver = {
   Query: {
     productList: async (
       _: any,
-      args: { categoryId?: string; brandId?: string }
+      args: {
+        categoryId?: string;
+        brandId?: string;
+        search?: string;
+        sort: { field: string; order: "ASC" | "DESC" };
+        pagination: { page: number; pageSize: number };
+      }
     ) => {
+      const { categoryId, brandId, search, sort, pagination } = args;
+
+      // Build MongoDB filter
       const filter: any = {};
+      if (categoryId) filter.category = categoryId;
+      if (brandId) filter.brand = brandId;
 
-      if (args.categoryId) {
-        filter.category = args.categoryId;
+      // Build search filter
+      if (search) {
+        const regex = new RegExp(search, "i");
+        filter["$or"] = searchableFields.map((field) => ({
+          [field]: { $regex: regex },
+        }));
       }
 
-      console.log("brandId:", args.brandId);
-      if (args.brandId) {
-        filter.brand = args.brandId;
+      // Build sort option
+      let sortOption: any = {};
+      if (sort?.field) {
+        sortOption[sort.field] = sort.order === "ASC" ? 1 : -1;
       }
 
-      return await Product.find(filter).populate("category").populate("brand");
+      // Pagination
+      const page = pagination?.page ?? 1;
+      const pageSize = pagination?.pageSize ?? 10;
+      const skip = (page - 1) * pageSize;
+
+      // Total count (for pagination info)
+      const total = await Product.countDocuments(filter);
+
+      // Query with filter, sort, pagination
+      const items = await Product.find(filter)
+        .sort(sortOption)
+        .skip(skip)
+        .limit(pageSize)
+        .populate("category")
+        .populate("brand");
+
+      return {
+        items,
+        total,
+        page,
+        pageSize,
+      };
     },
     productSearch: async (_: any, { keyword }: { keyword: string }) => {
       const regex = new RegExp(keyword, "i");

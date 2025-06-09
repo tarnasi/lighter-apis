@@ -1,6 +1,21 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 const productSchema = gql`
+  enum SortOrder {
+    ASC
+    DESC
+  }
+
+  input SortProductInput {
+    field: String!
+    order: SortOrder!
+  }
+
+  input PaginationProductInput {
+    page: Int!
+    pageSize: Int!
+  }
+
   type Product {
     id: ID!
     title: String!
@@ -13,8 +28,15 @@ const productSchema = gql`
     is_pack: Boolean!
     created_at: String!
     updated_at: String!
-    category: Category!
-    brand: Brand!
+    category: Category
+    brand: Brand
+  }
+
+  type PaginateProduct {
+    items: [Product!]!
+    total: Int!
+    page: Int!
+    pageSize: Int!
   }
 
   input CreateProductInput {
@@ -45,7 +67,13 @@ const productSchema = gql`
   }
 
   type Query {
-    productList(categoryId: ID, brandId: ID): [Product!]!
+    productList(
+      categoryId: ID,
+      brandId: ID,
+      search: String,
+      sort: SortProductInput,
+      pagination: PaginationProductInput
+    ): PaginateProduct!
     productSearch(keyword: String!): [Product!]!
     product(id: ID!): Product
   }
