@@ -70,7 +70,10 @@ const brandSchema = gql`
       sort: sortBrandInput
       pagination: BrandPaginationInput
     ): PaginatedBrands!
-    brandSearch(keyword: String!): [Brand!]!
+    brandByCategorySlug(
+      catSlug: String!,
+      pagination: BrandPaginationInput
+    ): PaginatedBrands!
     brand(id: ID!): Brand
   }
 

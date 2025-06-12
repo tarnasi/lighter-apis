@@ -1,6 +1,6 @@
 import Brand, { IBrand } from "../../models/Brand";
+import Category from "../../models/Category";
 import Product from "../../models/Product";
-
 
 const searchableFields = ["name", "slug", "description"];
 
@@ -52,24 +52,62 @@ const brandResolver = {
         pageSize,
       };
     },
-    brandSearch: async (_: any, { keyword }: { keyword: string }) => {
-      const regex = new RegExp(keyword, "i");
-      return await Brand.find({
-        $or: [
-          { name: { $regex: regex } },
-          { slug: { $regex: regex } },
-          { description: { $regex: regex } },
-        ],
-      }).populate("category");
-    },
+
     brand: async (_: any, { id }: { id: string }) => {
       return await Brand.findById(id).populate("category");
+    },
+
+    brandByCategorySlug: async (
+      _: any,
+      args: {
+        catSlug: string;
+        pagination: { page: number; pageSize: number };
+      }
+    ) => {
+      const {
+        catSlug,
+        pagination: { pageSize = 100, page = 1 }
+      } = args;
+      const skip = (page - 1) * pageSize;
+
+      if (catSlug === 'all') {
+        const total = await Brand.countDocuments();
+        const items = await Brand.find()
+          .skip(skip)
+          .limit(pageSize)
+          .populate("category");
+
+        return {
+          items,
+          total,
+          pageSize,
+          page,
+        };
+      }
+
+      const category = await Category.findOne({ slug: catSlug });
+      if (!category) {
+        console.error(`No category found for slug: ${catSlug}`);
+        return [];
+      }
+
+      const total = await Product.countDocuments({ category: category._id });
+      const items = await Brand.find({ category: category._id })
+        .skip(skip)
+        .limit(pageSize)
+        .populate("category");
+
+      return {
+        items,
+        total,
+        pageSize,
+        page,
+      };
     },
   },
 
   Brand: {
     products: async (parent: IBrand) => {
-      // Always return array, never null!
       return (await Product.find({ brand: parent.id })) || [];
     },
   },
@@ -83,6 +121,7 @@ const brandResolver = {
       await brand.save();
       return brand.populate("category");
     },
+
     updateBrand: async (_: any, { input }: { input: any }) => {
       const updated = await Brand.findByIdAndUpdate(
         input.id,
@@ -94,6 +133,7 @@ const brandResolver = {
       );
       return updated.populate("category");
     },
+
     deleteBrand: async (_: any, { id }: { id: string }) => {
       const result = await Brand.findByIdAndDelete(id);
       return !!result;

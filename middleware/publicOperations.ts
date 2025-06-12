@@ -3,12 +3,10 @@ export const public_operations = [
   "Register",
   "UserList",
   "ProductList",
-  "ProductSearch",
   "Product",
   "CategoryList",
-  "CategorySearch",
   "Category",
-  "brandLis",
-  "brandSearch",
-  "brand",
+  "BrandList",
+  "Brand",
+  'BrandByCategorySlug'
 ];
