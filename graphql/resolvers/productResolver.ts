@@ -1,3 +1,4 @@
+import Brand from "../../models/Brand";
 import Category from "../../models/Category";
 import Product from "../../models/Product";
 
@@ -72,7 +73,11 @@ const productResolver = {
         sort: { field: string; order: "ASC" | "DESC" };
       }
     ) => {
-      const { catSlug, pagination: {pageSize = 10, page = 1}, sort } = args;
+      const {
+        catSlug,
+        pagination: { pageSize = 10, page = 1 },
+        sort,
+      } = args;
 
       // Find category
       const category = await Category.findOne({ slug: catSlug });
@@ -103,7 +108,54 @@ const productResolver = {
         items,
         total,
         pageSize,
-        page
+        page,
+      };
+    },
+
+    productByBrandSlug: async (
+      _: any,
+      args: {
+        brandSlug: string;
+        pagination: { page: number; pageSize: number };
+        sort: { field: string; order: "ASC" | "DESC" };
+      }
+    ) => {
+      const {
+        brandSlug,
+        pagination: { pageSize = 10, page = 1 },
+        sort,
+      } = args;
+
+      // Find category
+      const brand = await Brand.findOne({ slug: brandSlug });
+      if (!brand) {
+        console.error(`No brand found for slug: ${brandSlug}`);
+        return [];
+      }
+
+      // Build sort option
+      let sortOption: any = {};
+      if (sort?.field) {
+        sortOption[sort.field] = sort.order === "ASC" ? 1 : -1;
+      }
+
+      const total = await Product.countDocuments({ brand: brand._id });
+
+      // Calculate skip value
+      const skip = (page - 1) * pageSize;
+      // Find products
+      const items = await Product.find({ brand: brand._id })
+        .sort(sortOption)
+        .skip(skip)
+        .limit(pageSize)
+        .populate("brand")
+        .populate("category");
+
+      return {
+        items,
+        total,
+        pageSize,
+        page,
       };
     },
   },

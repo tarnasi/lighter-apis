@@ -8,5 +8,7 @@ export const public_operations = [
   "Category",
   "BrandList",
   "Brand",
-  'BrandByCategorySlug'
+  'BrandByCategorySlug',
+  'ProductByBrandSlug',
+  'ProductByCategorySlug'
 ];
