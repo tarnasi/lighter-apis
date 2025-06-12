@@ -1,6 +1,5 @@
-import Brand, { IBrand } from "../../models/Brand";
-import Category, { ICategory } from "../../models/Category";
-import Product, { IProduct } from "../../models/Product";
+import Category from "../../models/Category";
+import Product from "../../models/Product";
 
 const searchableFields = ["title", "slug", "description"];
 
@@ -60,20 +59,52 @@ const productResolver = {
         pageSize,
       };
     },
-    productSearch: async (_: any, { keyword }: { keyword: string }) => {
-      const regex = new RegExp(keyword, "i");
-      return await Product.find({
-        $or: [
-          { title: { $regex: regex } },
-          { slug: { $regex: regex } },
-          { description: { $regex: regex } },
-        ],
-      })
-        .populate("category")
-        .populate("brand");
-    },
+
     product: async (_: any, { id }: { id: string }) => {
       return await Product.findById(id).populate("category").populate("brand");
+    },
+
+    productByCategorySlug: async (
+      _: any,
+      args: {
+        catSlug: string;
+        pagination: { page: number; pageSize: number };
+        sort: { field: string; order: "ASC" | "DESC" };
+      }
+    ) => {
+      const { catSlug, pagination: {pageSize = 10, page = 1}, sort } = args;
+
+      // Find category
+      const category = await Category.findOne({ slug: catSlug });
+      if (!category) {
+        console.error(`No category found for slug: ${catSlug}`);
+        return [];
+      }
+
+      // Build sort option
+      let sortOption: any = {};
+      if (sort?.field) {
+        sortOption[sort.field] = sort.order === "ASC" ? 1 : -1;
+      }
+
+      const total = await Product.countDocuments({ category: category._id });
+
+      // Calculate skip value
+      const skip = (page - 1) * pageSize;
+      // Find products
+      const items = await Product.find({ category: category._id })
+        .sort(sortOption)
+        .skip(skip)
+        .limit(pageSize)
+        .populate("brand")
+        .populate("category");
+
+      return {
+        items,
+        total,
+        pageSize,
+        page
+      };
     },
   },
 

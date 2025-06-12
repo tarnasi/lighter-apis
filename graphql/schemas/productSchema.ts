@@ -74,7 +74,11 @@ const productSchema = gql`
       sort: SortProductInput,
       pagination: PaginationProductInput
     ): PaginateProduct!
-    productSearch(keyword: String!): [Product!]!
+    productByCategorySlug(
+      catSlug: String!,
+      pagination: PaginationProductInput,
+      sort: SortProductInput
+    ): PaginateProduct!
     product(id: ID!): Product
   }
 
