@@ -6,7 +6,7 @@ const brandSchema = gql`
     DESC
   }
 
-  input sortBrandInput {
+  input SortBrandInput {
     field: String!
     order: SortType!
   }
@@ -67,7 +67,7 @@ const brandSchema = gql`
   type Query {
     brandList(
       search: String
-      sort: sortBrandInput
+      sort: SortBrandInput
       pagination: BrandPaginationInput
     ): PaginatedBrands!
     brandByCategorySlug(
