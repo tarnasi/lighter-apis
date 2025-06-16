@@ -1,6 +1,6 @@
 import Ticket from "../../models/Ticket";
 
-export const ticketResolvers = {
+const ticketResolvers = {
   Query: {
     myTickets: async (_: any, __: any, { user }: any) => {
       return Ticket.find({ user: user._id })
@@ -62,3 +62,5 @@ export const ticketResolvers = {
     },
   },
 };
+
+export default ticketResolvers;
