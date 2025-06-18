@@ -85,6 +85,7 @@ const productSchema = gql`
       sort: SortProductInput
     ): PaginateProduct!
     product(id: ID!): Product
+    productBySlug(slug: String!): Product
   }
 
   type Mutation {

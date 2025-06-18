@@ -65,6 +65,12 @@ const productResolver = {
       return await Product.findById(id).populate("category").populate("brand");
     },
 
+    productBySlug: async (_: any, { slug }: { slug: string }) => {
+      return await Product.findOne({ slug })
+        .populate("category")
+        .populate("brand");
+    },
+
     productByCategorySlug: async (
       _: any,
       args: {
